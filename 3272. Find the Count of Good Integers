@@ -1,0 +1,107 @@
+3272. Find the Count of Good Integers
+
+You are given two positive integers n and k.
+
+An integer x is called k-palindromic if:
+
+x is a palindrome.
+x is divisible by k.
+An integer is called good if its digits can be rearranged to form a k-palindromic integer. For example, for k = 2, 2020 can be rearranged to form the k-palindromic integer 2002, whereas 1010 cannot be rearranged to form a k-palindromic integer.
+
+Return the count of good integers containing n digits.
+
+Note that any integer must not have leading zeros, neither before nor after rearrangement. For example, 1010 cannot be rearranged to form 101.
+
+ 
+
+Example 1:
+
+Input: n = 3, k = 5
+
+Output: 27
+
+Explanation:
+
+Some of the good integers are:
+
+551 because it can be rearranged to form 515.
+525 because it is already k-palindromic.
+Example 2:
+
+Input: n = 1, k = 4
+
+Output: 2
+
+Explanation:
+
+The two good integers are 4 and 8.
+
+Example 3:
+
+Input: n = 5, k = 6
+
+Output: 2468
+
+#JAVA CODE:
+
+SOLUTION OF THE ABOVE PROBLEM:
+
+ class Solution {
+    public long countGoodIntegers(int n, int k) {
+
+        Set<String> uniquePalindromes = generatePalindromes(n);
+        Set<String> goodDigitPatterns = new HashSet<>();
+        
+        // Store digit frequency strings of valid k-palindromes
+        for (String pal : uniquePalindromes) {
+            if (Integer.parseInt(pal) % k == 0) {
+                String freq = getDigitFrequency(pal);
+                goodDigitPatterns.add(freq);
+            }
+        }
+
+        // Now, count all n-digit numbers whose digit frequency matches any of the good patterns
+        int start = (int)Math.pow(10, n - 1);
+        int end = (int)Math.pow(10, n);
+        int count = 0;
+
+        for (int num = start; num < end; num++) {
+            String freq = getDigitFrequency(Integer.toString(num));
+            if (goodDigitPatterns.contains(freq)) {
+                count++;
+            }
+        }
+
+        return count;
+    }
+
+    // Generate all palindromes of n-digit length
+    private Set<String> generatePalindromes(int n) {
+        Set<String> result = new HashSet<>();
+        int half = (n + 1) / 2;
+        int start = (int)Math.pow(10, half - 1);
+        int end = (int)Math.pow(10, half);
+
+        for (int i = start; i < end; i++) {
+            String halfStr = Integer.toString(i);
+            StringBuilder sb = new StringBuilder(halfStr);
+            if (n % 2 == 1) sb.setLength(sb.length() - 1); // remove last digit for odd
+            String pal = halfStr + sb.reverse().toString();
+            result.add(pal);
+        }
+
+        return result;
+    }
+
+    // Get digit frequency string as a key (e.g., "0012100000" for 122)
+    private String getDigitFrequency(String s) {
+        int[] count = new int[10];
+        for (char c : s.toCharArray()) {
+            count[c - '0']++;
+        }
+        return Arrays.toString(count); // string representation used as key
+    }
+
+    }
+
+
